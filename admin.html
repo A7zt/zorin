@@ -1,3 +1,175 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZORIN | Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --bg-light: #f4f7f6; --white: #ffffff; --text-dark: #333; --accent: #000; --border: #e0e0e0; }
+        body { margin: 0; font-family: 'Cairo', sans-serif; background: var(--bg-light); color: var(--text-dark); display: flex; }
+        
+        /* Sidebar */
+        aside { width: 260px; background: #000; padding: 30px 15px; position: fixed; height: 100vh; right: 0; color: #fff; box-shadow: -2px 0 10px rgba(0,0,0,0.1); }
+        .brand { text-align: center; margin-bottom: 40px; }
+        .brand img { width: 65px; height: 65px; border-radius: 50%; border: 2px solid #333; object-fit: cover; }
+        .nav-link { padding: 14px; color: #aaa; cursor: pointer; display: flex; align-items: center; gap: 12px; border-radius: 8px; margin-bottom: 8px; transition: 0.3s; }
+        .nav-link.active, .nav-link:hover { background: #222; color: #fff; }
+
+        /* Main Content */
+        main { flex: 1; margin-right: 260px; padding: 40px; min-height: 100vh; }
+        .section { display: none; max-width: 900px; margin: 0 auto; }
+        .section.active { display: block; animation: fadeIn 0.3s; }
+
+        /* Cards Style (Inspired by your image) */
+        .glass-card { background: var(--white); border: 1px solid var(--border); padding: 25px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin-bottom: 25px; }
+        h3 { margin-top: 0; font-weight: 700; color: var(--accent); border-right: 4px solid var(--accent); padding-right: 15px; margin-bottom: 25px; }
+
+        /* Inputs */
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Cairo'; font-size: 14px; transition: 0.3s; }
+        input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
+
+        /* Variants Matrix */
+        .stock-row { display: grid; grid-template-columns: 2fr repeat(4, 1fr) auto; gap: 10px; align-items: end; background: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px solid var(--border); }
+        .stock-box { text-align: center; }
+        .stock-box label { display: block; font-size: 11px; font-weight: bold; color: #888; margin-bottom: 5px; }
+        .stock-box input { margin: 0; text-align: center; padding: 8px; border: 1px solid #ddd; }
+
+        .variant-item { background: #fff; border: 1px solid var(--border); padding: 12px; border-radius: 8px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .variant-info b { color: #000; }
+        .variant-info span { font-size: 12px; color: #666; margin-right: 10px; }
+
+        /* Photo Grid */
+        .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .photo-input { background: #f9f9f9; border: 1px dashed #ccc; padding: 10px; border-radius: 8px; font-size: 11px; }
+
+        .submit-btn { background: var(--accent); color: #fff; padding: 16px; border: none; width: 100%; font-weight: bold; cursor: pointer; border-radius: 8px; font-size: 16px; transition: 0.3s; }
+        .submit-btn:hover { background: #333; transform: translateY(-2px); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+   /* تصميم مربعات الأقسام */
+.category-selector {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.cat-tag {
+    cursor: pointer;
+}
+.cat-tag input {
+    display: none; /* إخفاء المربع التقليدي */
+}
+.cat-tag span {
+    display: inline-block;
+    padding: 8px 18px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    font-size: 13px;
+    transition: 0.3s;
+    background: #f9f9f9;
+}
+.cat-tag input:checked + span {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+/* تنسيق جدول المخزون */
+.inventory-table input {
+    width: 70px;
+    padding: 5px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    text-align: center;
+    font-family: sans-serif;
+}
+.sale-input {
+    color: #e63946;
+    font-weight: bold;
+}
+   </style>
+</head>
+<body>
+
+<aside>
+    <div class="brand">
+    <img src="logo.jpg.jpeg" alt="ZORIN Logo" id="adminLogo">
+    <h2 style="font-family:'Syncopate'; font-size: 0.9rem; letter-spacing: 2px;">ZORIN</h2>
+</div>
+    <div class="nav-link active" onclick="tab('add', this)"><i class="fas fa-plus-circle"></i> إضافة منتج</div>
+    <div class="nav-link" onclick="tab('inv', this)"><i class="fas fa-layer-group"></i> المخزن</div>
+    <div class="nav-link" onclick="tab('ord', this)"><i class="fas fa-truck"></i> الطلبات</div>
+<div class="nav-link" onclick="logout()" style="margin-top: auto; color: #ff4444;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</div>
+</aside>
+
+<main>
+    <section id="add" class="section active">
+        <h3>رفع منتج جديد</h3>
+        <div class="glass-card">
+            <input type="text" id="pName" placeholder="اسم القطعة">
+            <input type="number" id="pPrice" placeholder="السعر">
+            
+            <div class="stock-row">
+                <div class="stock-box"><label>اللون</label><input type="text" id="vColor" placeholder="أسود"></div>
+                <div class="stock-box"><label>M</label><input type="number" id="vM" value="0"></div>
+                <div class="stock-box"><label>L</label><input type="number" id="vL" value="0"></div>
+                <div class="stock-box"><label>XL</label><input type="number" id="vXL" value="0"></div>
+                <div class="stock-box"><label>XXL</label><input type="number" id="vXXL" value="0"></div>
+                <button type="button" onclick="addV()" style="background:#000; color:#fff; border:none; padding:10px 15px; border-radius:6px; cursor:pointer;"><i class="fas fa-plus"></i></button>
+            </div>
+            <div class="admin-section">
+    <label class="section-label">SELECT CATEGORIES</label>
+    <div class="category-selector">
+        <label class="cat-tag">
+            <input type="checkbox" name="categories" value="tops">
+            <span>Tops</span>
+        </label>
+        <label class="cat-tag">
+            <input type="checkbox" name="categories" value="bottoms">
+            <span>Bottoms</span>
+        </label>
+        <label class="cat-tag">
+            <input type="checkbox" name="categories" value="sets">
+            <span>Full Sets</span>
+        </label>
+        <label class="cat-tag">
+            <input type="checkbox" name="categories" value="new-arrival">
+            <span>New Arrival</span>
+        </label>
+    </div>
+</div>
+            <div id="variantList"></div>
+
+            <textarea id="pDesc" rows="3" placeholder="وصف المنتج، الخامة..." style="margin-top:15px;"></textarea>
+            
+            <label style="font-size: 13px; font-weight: bold; margin-bottom: 10px; display: block;">صور المنتج (حتى 6 صور):</label>
+            <div class="photo-grid">
+                <input type="file" class="photo-input" id="f1"> <input type="file" class="photo-input" id="f2">
+                <input type="file" class="photo-input" id="f3"> <input type="file" class="photo-input" id="f4">
+                <input type="file" class="photo-input" id="f5"> <input type="file" class="photo-input" id="f6">
+            </div>
+            
+            <button class="submit-btn" id="saveBtn" onclick="save()">نشر المنتج الآن</button>
+        </div>
+    </section>
+
+    <section id="inv" class="section">
+        <h3>إدارة المخزن والأسعار</h3>
+        <div id="invContainer"></div>
+    </section>
+
+    <section id="ord" class="section">
+        <h3>الطلبات الواردة</h3>
+        <div id="ordContainer"></div>
+    </section>
+    <section id="ord" class="section">
+        <h3>الطلبات الجديدة</h3>
+        <div id="ordContainer"></div>
+    </section>
+</main>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     // أضفنا استيراد getAuth و signOut و onAuthStateChanged للأمان
