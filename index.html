@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZORIN | Official Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root { --black: #000; --white: #fff; --border: #1a1a1a; }
+        body { margin: 0; font-family: 'Cairo', sans-serif; background: var(--black); color: var(--white); }
+
+        /* Header */
+        header { 
+            padding: 30px; display: flex; justify-content: center; align-items: center;
+            border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(0,0,0,0.9); z-index: 100;
+        }
+        .logo { font-family: 'Syncopate'; font-size: 2rem; letter-spacing: 15px; text-decoration: none; color: white; }
+
+        /* Grid */
+        .container { max-width: 1400px; margin: 50px auto; padding: 0 20px; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px; }
+        
+        .product-card { cursor: pointer; border: 1px solid var(--border); position: relative; }
+        .product-card img { width: 100%; height: 500px; object-fit: cover; filter: brightness(0.8); transition: 0.5s; }
+        .product-card:hover img { filter: brightness(1); }
+        .product-info { padding: 20px; text-align: center; }
+        .product-info h3 { font-family: 'Syncopate'; font-size: 0.8rem; letter-spacing: 2px; margin: 0; }
+        
+        .sold-out { position: absolute; top: 20px; right: 20px; background: white; color: black; padding: 5px 15px; font-weight: bold; font-size: 0.7rem; }
+
+        /* Login Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: #0a0a0a; padding: 40px; border: 1px solid var(--border); width: 320px; text-align: center; }
+        input { width: 100%; padding: 15px; margin: 10px 0; background: #000; border: 1px solid #222; color: #fff; }
+        .btn { width: 100%; padding: 15px; background: white; color: black; border: none; font-weight: bold; cursor: pointer; }
+
+        footer { padding: 100px 20px; text-align: center; border-top: 1px solid var(--border); }
+        .admin-trigger { color: #222; text-decoration: none; font-size: 0.7rem; cursor: pointer; transition: 0.3s; }
+        .admin-trigger:hover { color: #666; }
+    </style>
+</head>
+<body>
+
+    <header><a href="index.html" class="logo">ZORIN</a></header>
+
+    <main class="container">
+        <div id="products-grid" class="products-grid">
+            <p style="text-align: center; grid-column: 1/-1;">LOADING COLLECTION...</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 ZORIN STUDIO</p>
+        <span class="admin-trigger" onclick="openLogin()">STAFF ACCESS</span>
+    </footer>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2 style="font-family:'Syncopate'; font-size: 1rem; margin-bottom: 20px;">ADMIN LOGIN</h2>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="pass" placeholder="Password">
+            <button class="btn" onclick="login()">ENTER DASHBOARD</button>
+            <p onclick="closeLogin()" style="color:#444; font-size:0.7rem; margin-top:20px; cursor:pointer;">CLOSE</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCInkKv1hByxRZiHbOAfRn9bGbmaAPoZ8A",
+            authDomain: "mystore-842cf.firebaseapp.com",
+            projectId: "mystore-842cf",
+            storageBucket: "mystore-842cf.firebasestorage.app",
+            messagingSenderId: "594163229640",
+            appId: "1:594163229640:web:888670dd4016e8111656fd"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // فتح وإغلاق نافذة الدخول
+        window.openLogin = () => document.getElementById('loginModal').style.display = 'flex';
+        window.closeLogin = () => document.getElementById('loginModal').style.display = 'none';
+
+        // وظيفة تسجيل الدخول
+        window.login = async () => {
+            const e = document.getElementById('email').value;
+            const p = document.getElementById('pass').value;
+            try {
+                await signInWithEmailAndPassword(auth, e, p);
+                window.location.href = 'admin.html'; // لو صح يروح للأدمن
+            } catch (error) {
+                alert("بيانات الدخول غير صحيحة");
+            }
+        };
+
+        // تحميل المنتجات
+        onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = "";
+            snap.forEach(doc => {
+                const p = doc.data();
+                const isOut = p.stock <= 0;
+                grid.innerHTML += `
+                    <div class="product-card" onclick="window.location.href='product.html?id=${doc.id}'">
+                        ${isOut ? '<div class="sold-out">SOLD OUT</div>' : ''}
+                        <img src="${p.image}" style="${isOut ? 'opacity:0.3; filter:grayscale(1)' : ''}">
+                        <div class="product-info">
+                            <h3>${p.name}</h3>
+                            <p style="color:#666">${p.price} EGP</p>
+                        </div>
+                    </div>`;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZORIN | Product Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root { --black: #000; --white: #fff; --border: #1a1a1a; --red: #ff4444; }
+        body { margin: 0; font-family: 'Cairo', sans-serif; background: var(--black); color: var(--white); }
+        header { padding: 25px; text-align: center; border-bottom: 1px solid var(--border); }
+        .logo { font-family: 'Syncopate'; font-size: 1.5rem; letter-spacing: 10px; text-decoration: none; color: white; }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 20px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 60px; }
+
+        /* Gallery System */
+        .image-gallery { display: flex; flex-direction: column; gap: 15px; }
+        .main-img-container { width: 100%; height: 650px; border: 1px solid var(--border); overflow: hidden; }
+        #mainImg { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s ease; }
+        
+        .thumbnails { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; }
+        .thumbnails img { 
+            width: 90px; height: 110px; object-fit: cover; cursor: pointer; 
+            opacity: 0.4; border: 1px solid transparent; transition: 0.3s; 
+        }
+        .thumbnails img.active { opacity: 1; border-color: white; }
+
+        .details h1 { font-family: 'Syncopate'; font-size: 2.5rem; margin: 0; letter-spacing: 4px; }
+        .price { font-size: 1.8rem; color: #888; margin: 20px 0; }
+        .status { font-weight: bold; margin-bottom: 20px; }
+
+        .order-btn { 
+            background: white; color: black; border: none; padding: 20px; width: 100%; 
+            font-weight: bold; font-size: 1rem; cursor: pointer; letter-spacing: 3px; margin-top: 30px; 
+        }
+        .order-btn:disabled { background: #222; color: #555; }
+
+        @media (max-width: 768px) { 
+            .container { grid-template-columns: 1fr; }
+            .main-img-container { height: 450px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header><a href="index.html" class="logo">ZORIN</a></header>
+
+    <div class="container" id="product-content">
+        <p style="text-align: center; grid-column: 1/-1;">LOADING...</p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCInkKv1hByxRZiHbOAfRn9bGbmaAPoZ8A",
+            authDomain: "mystore-842cf.firebaseapp.com",
+            projectId: "mystore-842cf",
+            storageBucket: "mystore-842cf.firebasestorage.app",
+            messagingSenderId: "594163229640",
+            appId: "1:594163229640:web:888670dd4016e8111656fd"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        // دالة تغيير الصورة (تم تعريفها كـ window لتعمل من الـ HTML)
+        window.changeImg = function(src, el) {
+            const mainImg = document.getElementById('mainImg');
+            mainImg.style.opacity = '0'; // تأثير تلاشي بسيط
+            setTimeout(() => {
+                mainImg.src = src;
+                mainImg.style.opacity = '1';
+            }, 200);
+
+            // تحديث شكل الصور المصغرة
+            document.querySelectorAll('.thumbnails img').forEach(img => img.classList.remove('active'));
+            el.classList.add('active');
+        };
+
+        async function loadProduct() {
+            if(!productId) return;
+            const docSnap = await getDoc(doc(db, "products", productId));
+            
+            if (docSnap.exists()) {
+                const p = docSnap.data();
+                const isOut = p.stock <= 0;
+                
+                // جلب الصور: لو في gallery استخدمها، لو مفيش استخدم الصورة الأساسية في مصفوفة
+                const images = p.gallery && p.gallery.length > 0 ? p.gallery : [p.image];
+
+                let thumbsHTML = images.map((img, i) => `
+                    <img src="${img}" class="${i === 0 ? 'active' : ''}" onclick="changeImg('${img}', this)">
+                `).join('');
+
+                document.getElementById('product-content').innerHTML = `
+                    <div class="image-gallery">
+                        <div class="main-img-container">
+                            <img src="${p.image}" id="mainImg">
+                        </div>
+                        <div class="thumbnails">${thumbsHTML}</div>
+                    </div>
+                    <div class="details">
+                        <h1>${p.name}</h1>
+                        <div class="price">${p.price} EGP</div>
+                        <p class="status" style="color:${isOut ? 'red' : '#00ff88'}">
+                            ${isOut ? 'SOLD OUT' : 'AVAILABLE IN STOCK'}
+                        </p>
+                        <div style="border-top:1px solid #111; padding-top:20px;">
+                            <h4 style="color:#555; letter-spacing:2px;">DESCRIPTION</h4>
+                            <p style="color:#ccc; line-height:1.8;">${p.description || 'Premium ZORIN piece.'}</p>
+                        </div>
+                        <button class="order-btn" ${isOut ? 'disabled' : ''} onclick="alert('تم تفعيل الطلب!')">
+                            ${isOut ? 'OUT OF STOCK' : 'ORDER PIECE'}
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        loadProduct();
+    </script>
+</body>
+</html>
