@@ -8,100 +8,101 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg-light: #f4f7f6; --white: #ffffff; --text-dark: #333; --accent: #000; --border: #e0e0e0; }
-        body { margin: 0; font-family: 'Cairo', sans-serif; background: var(--bg-light); color: var(--text-dark); display: flex; }
+        body { margin: 0; font-family: 'Cairo', sans-serif; background: var(--bg-light); color: var(--text-dark); display: flex; flex-direction: row; }
         
-        /* Sidebar */
-        aside { width: 260px; background: #000; padding: 30px 15px; position: fixed; height: 100vh; right: 0; color: #fff; box-shadow: -2px 0 10px rgba(0,0,0,0.1); }
+        /* Mobile Header - يظهر فقط في الموبايل */
+        .mobile-header {
+            display: none; width: 100%; background: #000; color: #fff;
+            padding: 15px; position: fixed; top: 0; z-index: 1001;
+            justify-content: space-between; align-items: center; box-sizing: border-box;
+        }
+
+        /* Sidebar - تعديل ليكون متجاوباً */
+        aside { 
+            width: 260px; background: #000; padding: 30px 15px; position: fixed; 
+            height: 100vh; right: 0; color: #fff; box-shadow: -2px 0 10px rgba(0,0,0,0.1); 
+            z-index: 1000; transition: 0.3s; 
+        }
+        
         .brand { text-align: center; margin-bottom: 40px; }
         .brand img { width: 65px; height: 65px; border-radius: 50%; border: 2px solid #333; object-fit: cover; }
+        
         .nav-link { padding: 14px; color: #aaa; cursor: pointer; display: flex; align-items: center; gap: 12px; border-radius: 8px; margin-bottom: 8px; transition: 0.3s; }
         .nav-link.active, .nav-link:hover { background: #222; color: #fff; }
 
         /* Main Content */
-        main { flex: 1; margin-right: 260px; padding: 40px; min-height: 100vh; }
+        main { flex: 1; margin-right: 260px; padding: 40px; min-height: 100vh; box-sizing: border-box; transition: 0.3s; }
         .section { display: none; max-width: 900px; margin: 0 auto; }
         .section.active { display: block; animation: fadeIn 0.3s; }
 
-        /* Cards Style (Inspired by your image) */
-        .glass-card { background: var(--white); border: 1px solid var(--border); padding: 25px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin-bottom: 25px; }
-        h3 { margin-top: 0; font-weight: 700; color: var(--accent); border-right: 4px solid var(--accent); padding-right: 15px; margin-bottom: 25px; }
+        /* Cards Style */
+        .glass-card { background: var(--white); border: 1px solid var(--border); padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin-bottom: 25px; }
+        h3 { margin-top: 0; font-weight: 700; color: var(--accent); border-right: 4px solid var(--accent); padding-right: 15px; margin-bottom: 25px; font-size: 1.2rem; }
 
         /* Inputs */
-        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Cairo'; font-size: 14px; transition: 0.3s; }
-        input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Cairo'; font-size: 14px; box-sizing: border-box; }
+        
+        /* Variants Matrix - Responsive */
+        .stock-row { 
+            display: grid; grid-template-columns: 2fr repeat(4, 1fr) auto; gap: 8px; 
+            align-items: end; background: #f9f9f9; padding: 12px; border-radius: 10px; border: 1px solid var(--border); 
+        }
+        .stock-box label { display: block; font-size: 10px; font-weight: bold; color: #888; margin-bottom: 4px; text-align: center; }
+        .stock-box input { margin: 0; text-align: center; padding: 8px 2px; }
 
-        /* Variants Matrix */
-        .stock-row { display: grid; grid-template-columns: 2fr repeat(4, 1fr) auto; gap: 10px; align-items: end; background: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px solid var(--border); }
-        .stock-box { text-align: center; }
-        .stock-box label { display: block; font-size: 11px; font-weight: bold; color: #888; margin-bottom: 5px; }
-        .stock-box input { margin: 0; text-align: center; padding: 8px; border: 1px solid #ddd; }
-
-        .variant-item { background: #fff; border: 1px solid var(--border); padding: 12px; border-radius: 8px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .variant-info b { color: #000; }
-        .variant-info span { font-size: 12px; color: #666; margin-right: 10px; }
+        /* Inventory Responsive Card */
+        .inv-card-flex { display: flex; gap: 15px; align-items: start; }
 
         /* Photo Grid */
         .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .photo-input { background: #f9f9f9; border: 1px dashed #ccc; padding: 10px; border-radius: 8px; font-size: 11px; }
+        .photo-input { background: #f9f9f9; border: 1px dashed #ccc; padding: 10px; border-radius: 8px; font-size: 11px; height: auto; }
 
-        .submit-btn { background: var(--accent); color: #fff; padding: 16px; border: none; width: 100%; font-weight: bold; cursor: pointer; border-radius: 8px; font-size: 16px; transition: 0.3s; }
-        .submit-btn:hover { background: #333; transform: translateY(-2px); }
+        .submit-btn { background: var(--accent); color: #fff; padding: 16px; border: none; width: 100%; font-weight: bold; cursor: pointer; border-radius: 8px; font-size: 16px; }
+
+        /* --- استعلامات الوسائط للموبايل (Media Queries) --- */
+        @media (max-width: 768px) {
+            .mobile-header { display: flex; }
+            aside { right: -260px; padding-top: 80px; } /* إخفاء السايد بار مبدئياً */
+            aside.open { right: 0; }
+            main { margin-right: 0; padding: 100px 15px 40px; }
+            
+            .stock-row { 
+                grid-template-columns: 1fr 1fr; /* تحويل الشبكة لصفين في الموبايل */
+                gap: 15px;
+            }
+            .stock-row .stock-box:first-child { grid-column: span 2; }
+            
+            .photo-grid { grid-template-columns: repeat(2, 1fr); }
+            
+            .inv-card-flex { flex-direction: column; align-items: center; text-align: center; }
+            .inv-card-flex img { width: 120px; height: 160px; }
+        }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-   /* تصميم مربعات الأقسام */
-.category-selector {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-}
-.cat-tag {
-    cursor: pointer;
-}
-.cat-tag input {
-    display: none; /* إخفاء المربع التقليدي */
-}
-.cat-tag span {
-    display: inline-block;
-    padding: 8px 18px;
-    border: 1px solid #ddd;
-    border-radius: 25px;
-    font-size: 13px;
-    transition: 0.3s;
-    background: #f9f9f9;
-}
-.cat-tag input:checked + span {
-    background: #000;
-    color: #fff;
-    border-color: #000;
-}
-
-/* تنسيق جدول المخزون */
-.inventory-table input {
-    width: 70px;
-    padding: 5px;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    text-align: center;
-    font-family: sans-serif;
-}
-.sale-input {
-    color: #e63946;
-    font-weight: bold;
-}
-   </style>
+        
+        .category-selector { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+        .cat-tag { cursor: pointer; }
+        .cat-tag input { display: none; }
+        .cat-tag span { display: inline-block; padding: 6px 14px; border: 1px solid #ddd; border-radius: 20px; font-size: 12px; background: #f9f9f9; }
+        .cat-tag input:checked + span { background: #000; color: #fff; border-color: #000; }
+    </style>
 </head>
 <body>
 
-<aside>
-    <div class="brand">
-    <img src="logo.jpg.jpeg" alt="ZORIN Logo" id="adminLogo">
-    <h2 style="font-family:'Syncopate'; font-size: 0.9rem; letter-spacing: 2px;">ZORIN</h2>
+<div class="mobile-header">
+    <div style="font-family:'Syncopate'; font-weight:bold; letter-spacing:1px;">ZORIN ADMIN</div>
+    <div onclick="toggleMenu()" style="font-size: 24px; cursor: pointer;"><i class="fas fa-bars"></i></div>
 </div>
+
+<aside id="sidebar">
+    <div class="brand">
+        <img src="logo.jpg.jpeg" alt="ZORIN Logo">
+        <h2 style="font-family:'Syncopate'; font-size: 0.9rem; letter-spacing: 2px;">ZORIN</h2>
+    </div>
     <div class="nav-link active" onclick="tab('add', this)"><i class="fas fa-plus-circle"></i> إضافة منتج</div>
     <div class="nav-link" onclick="tab('inv', this)"><i class="fas fa-layer-group"></i> المخزن</div>
     <div class="nav-link" onclick="tab('ord', this)"><i class="fas fa-truck"></i> الطلبات</div>
-<div class="nav-link" onclick="logout()" style="margin-top: auto; color: #ff4444;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</div>
+    <div class="nav-link" onclick="logout()" style="margin-top: 40px; color: #ff4444;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</div>
 </aside>
 
 <main>
@@ -117,34 +118,23 @@
                 <div class="stock-box"><label>L</label><input type="number" id="vL" value="0"></div>
                 <div class="stock-box"><label>XL</label><input type="number" id="vXL" value="0"></div>
                 <div class="stock-box"><label>XXL</label><input type="number" id="vXXL" value="0"></div>
-                <button type="button" onclick="addV()" style="background:#000; color:#fff; border:none; padding:10px 15px; border-radius:6px; cursor:pointer;"><i class="fas fa-plus"></i></button>
+                <button type="button" onclick="addV()" style="background:#000; color:#fff; border:none; padding:10px; border-radius:6px; cursor:pointer;"><i class="fas fa-plus"></i></button>
             </div>
-            <div class="admin-section">
-    <label class="section-label">SELECT CATEGORIES</label>
-    <div class="category-selector">
-        <label class="cat-tag">
-            <input type="checkbox" name="categories" value="tops">
-            <span>Tops</span>
-        </label>
-        <label class="cat-tag">
-            <input type="checkbox" name="categories" value="bottoms">
-            <span>Bottoms</span>
-        </label>
-        <label class="cat-tag">
-            <input type="checkbox" name="categories" value="sets">
-            <span>Full Sets</span>
-        </label>
-        <label class="cat-tag">
-            <input type="checkbox" name="categories" value="new-arrival">
-            <span>New Arrival</span>
-        </label>
-    </div>
-</div>
-            <div id="variantList"></div>
 
-            <textarea id="pDesc" rows="3" placeholder="وصف المنتج، الخامة..." style="margin-top:15px;"></textarea>
+            <div style="margin-top: 20px;">
+                <label style="font-size: 12px; font-weight: bold; color: #999;">SELECT CATEGORIES</label>
+                <div class="category-selector">
+                    <label class="cat-tag"><input type="checkbox" name="categories" value="tops"><span>Tops</span></label>
+                    <label class="cat-tag"><input type="checkbox" name="categories" value="bottoms"><span>Bottoms</span></label>
+                    <label class="cat-tag"><input type="checkbox" name="categories" value="sets"><span>Full Sets</span></label>
+                    <label class="cat-tag"><input type="checkbox" name="categories" value="new-arrival"><span>New Arrival</span></label>
+                </div>
+            </div>
+
+            <div id="variantList"></div>
+            <textarea id="pDesc" rows="3" placeholder="وصف المنتج..." style="margin-top:15px;"></textarea>
             
-            <label style="font-size: 13px; font-weight: bold; margin-bottom: 10px; display: block;">صور المنتج (حتى 6 صور):</label>
+            <label style="font-size: 13px; font-weight: bold; margin-bottom: 10px; display: block;">صور المنتج (6 صور):</label>
             <div class="photo-grid">
                 <input type="file" class="photo-input" id="f1"> <input type="file" class="photo-input" id="f2">
                 <input type="file" class="photo-input" id="f3"> <input type="file" class="photo-input" id="f4">
@@ -164,15 +154,10 @@
         <h3>الطلبات الواردة</h3>
         <div id="ordContainer"></div>
     </section>
-    <section id="ord" class="section">
-        <h3>الطلبات الجديدة</h3>
-        <div id="ordContainer"></div>
-    </section>
 </main>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    // أضفنا استيراد getAuth و signOut و onAuthStateChanged للأمان
     import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -187,42 +172,30 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const auth = getAuth(app); // تعريف الـ Auth
+    const auth = getAuth(app);
 
-    // --- 🛡️ نظام الأمان وحماية الصفحة ---
     const ADMIN_EMAIL = "zorin@gmail.com";
 
     onAuthStateChanged(auth, (user) => {
-        if (!user) {
-            // لو مش مسجل دخول، ابعته لصفحة اللوج إن فوراً
+        if (!user || user.email !== ADMIN_EMAIL) {
             window.location.href = 'login.html';
-        } else if (user.email !== ADMIN_EMAIL) {
-            // لو مسجل بإيميل تاني غير الأدمن، اطرده
-            alert("غير مسموح لك بالدخول هنا!");
-            window.location.href = 'index.html';
         }
     });
 
-    // --- 🚪 دالة تسجيل الخروج ---
-    window.logout = () => {
-        signOut(auth).then(() => {
-            window.location.href = 'login.html';
-        }).catch((error) => {
-            console.error("Logout Error:", error);
-        });
+    window.toggleMenu = () => {
+        document.getElementById('sidebar').classList.toggle('open');
     };
 
-    let variants = [];
-
-    // --- دالة التنقل بين التابات ---
     window.tab = (id, el) => {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
         document.getElementById(id).classList.add('active'); 
         el.classList.add('active');
+        if(window.innerWidth <= 768) toggleMenu(); // أغلق القائمة بعد الاختيار في الموبايل
     };
 
-    // --- دالة إضافة الألوان (Variants) ---
+    // --- دالة إضافة الألوان ---
+    let variants = [];
     window.addV = () => {
         const color = document.getElementById('vColor').value;
         if(!color) return alert("اكتب اللون");
@@ -242,21 +215,18 @@
     function renderV() {
         document.getElementById('variantList').innerHTML = variants.map((v, i) => `
             <div class="variant-item">
-                <div class="variant-info"><b>${v.color}</b> | M:${v.stock.M} L:${v.stock.L} XL:${v.stock.XL} XXL:${v.stock.XXL}</div>
+                <div class="variant-info"><b>${v.color}</b> <span>M:${v.stock.M} L:${v.stock.L} XL:${v.stock.XL}</span></div>
                 <i class="fas fa-trash" onclick="variants.splice(${i},1);renderV()" style="color:red; cursor:pointer;"></i>
             </div>`).join('');
     }
 
-    // --- دالة حفظ المنتج الجديد ---
     window.save = async () => {
         const btn = document.getElementById('saveBtn');
         const pName = document.getElementById('pName').value;
         const pPrice = document.getElementById('pPrice').value;
-        
-        if(!pName || !pPrice || variants.length === 0) return alert("أكمل بيانات المنتج");
+        if(!pName || !pPrice || variants.length === 0) return alert("أكمل البيانات");
         
         btn.innerText = "جاري الرفع..."; btn.disabled = true;
-
         const urls = [];
         for(let i=1; i<=6; i++){
             const f = document.getElementById('f'+i).files[0];
@@ -271,94 +241,68 @@
         document.querySelectorAll('input[name="categories"]:checked').forEach(cb => selectedCategories.push(cb.value));
 
         await addDoc(collection(db, "products"), {
-            name: pName,
-            price: Number(pPrice),
-            salePrice: Number(pPrice),
-            categories: selectedCategories,
-            variants: variants,
-            image: urls[0],
-            allImages: urls,
-            createdAt: new Date()
+            name: pName, price: Number(pPrice), salePrice: Number(pPrice),
+            categories: selectedCategories, variants: variants,
+            image: urls[0], allImages: urls, createdAt: new Date()
         });
-
-        alert("تم النشر بنجاح!");
-        location.reload();
+        alert("تم النشر!"); location.reload();
     };
 
-    // --- جلب المخزن ---
     onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
         const inv = document.getElementById('invContainer');
-        if(!inv) return;
         inv.innerHTML = "";
-        
         snap.forEach(d => {
             const p = d.data();
             const pid = d.id;
-            
             let vHtml = "";
             (p.variants || []).forEach((v, idx) => {
                 vHtml += `
-                <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-top:5px;">
-                    <small>${v.color}:</small>
-                    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:5px;">
-                        ${['M','L','XL','XXL'].map(s => `
-                            <input type="number" value="${v.stock[s]}" class="stock-in-${pid}" data-v="${idx}" data-s="${s}" title="${s}">
-                        `).join('')}
+                <div style="background:#f9f9f9; padding:8px; border-radius:8px; margin-top:5px; font-size:12px;">
+                    <b>${v.color}:</b>
+                    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:5px; margin-top:5px;">
+                        ${['M','L','XL','XXL'].map(s => `<input type="number" value="${v.stock[s]}" class="stock-in-${pid}" data-v="${idx}" data-s="${s}" style="padding:4px; margin:0;">`).join('')}
                     </div>
                 </div>`;
             });
 
             inv.innerHTML += `
-            <div class="glass-card" style="display:flex; gap:15px; align-items:start;">
-                <img src="${p.image}" style="width:70px; height:90px; object-fit:cover; border-radius:8px;">
-                <div style="flex:1;">
-                    <div style="display:flex; justify-content:space-between;">
-                        <b>${p.name}</b>
-                        <i class="fas fa-trash" onclick="delP('${pid}')" style="color:red; cursor:pointer;"></i>
+            <div class="glass-card">
+                <div class="inv-card-flex">
+                    <img src="${p.image}" style="width:80px; height:100px; object-fit:cover; border-radius:8px;">
+                    <div style="flex:1; width:100%;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <b style="font-size:14px;">${p.name}</b>
+                            <i class="fas fa-trash" onclick="delP('${pid}')" style="color:red; cursor:pointer;"></i>
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin: 10px 0;">
+                            <input type="number" id="base-${pid}" value="${p.price}" title="السعر">
+                            <input type="number" id="sale-${pid}" value="${p.salePrice || p.price}" style="color:red;" title="السيل">
+                        </div>
+                        ${vHtml}
+                        <button onclick="saveChanges('${pid}')" style="width:100%; background:#000; color:#fff; border:none; padding:10px; border-radius:8px; margin-top:10px; cursor:pointer; font-size:12px;">تحديث</button>
                     </div>
-                    
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin: 10px 0;">
-                        <div><label style="font-size:10px;">السعر الأساسي</label><input type="number" id="base-${pid}" value="${p.price}"></div>
-                        <div><label style="font-size:10px; color:red;">سعر السيل</label><input type="number" id="sale-${pid}" value="${p.salePrice || p.price}" class="sale-input"></div>
-                    </div>
-
-                    <div style="font-size:11px; color:#666;">الأقسام: ${p.categories ? p.categories.join(', ') : '-'}</div>
-                    <div style="margin-top:10px;">${vHtml}</div>
-                    <button onclick="saveChanges('${pid}')" style="width:100%; background:#000; color:#fff; border:none; padding:8px; border-radius:5px; margin-top:10px; cursor:pointer;">تحديث البيانات</button>
                 </div>
             </div>`;
         });
     });
 
     window.saveChanges = async (pid) => {
-        const basePrice = document.getElementById(`base-${pid}`).value;
-        const salePrice = document.getElementById(`sale-${pid}`).value;
         const docRef = doc(db, "products", pid);
         const snap = await getDoc(docRef);
         const data = snap.data();
-        
-        const inputs = document.querySelectorAll(`.stock-in-${pid}`);
-        inputs.forEach(i => {
+        document.querySelectorAll(`.stock-in-${pid}`).forEach(i => {
             data.variants[i.dataset.v].stock[i.dataset.s] = parseInt(i.value);
         });
-
         await updateDoc(docRef, {
-            price: Number(basePrice),
-            salePrice: Number(salePrice),
+            price: Number(document.getElementById(`base-${pid}`).value),
+            salePrice: Number(document.getElementById(`sale-${pid}`).value),
             variants: data.variants
         });
-        alert("تم تحديث المنتج بنجاح ✅");
+        alert("تم التحديث ✅");
     };
 
-    onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")), (snap) => {
-        const ordContainer = document.getElementById('ordContainer');
-        if(!ordContainer) return;
-        ordContainer.innerHTML = "";
-        snap.forEach(d => {
-            const o = d.data();
-            // هنا يوضع كود عرض الطلبات الخاص بك
-        });
-    });
-
-    window.delP = async (id) => { if(confirm("حذف المنتج؟")) await deleteDoc(doc(db, "products", id)); };
+    window.logout = () => signOut(auth).then(() => window.location.href = 'login.html');
+    window.delP = async (id) => { if(confirm("حذف؟")) await deleteDoc(doc(db, "products", id)); };
 </script>
+</body>
+</html>
