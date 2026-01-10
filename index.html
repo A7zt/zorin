@@ -26,40 +26,38 @@
         .brand-center .logo { font-family: 'Syncopate', sans-serif; font-size: 1.1rem; letter-spacing: 4px; font-weight: 700; color: #000; margin: 0; cursor: pointer; }
         .nav-icons .icon-btn { font-size: 18px; color: #000; cursor: pointer; text-decoration: none; }
 
-        /* Sidebar Styles */
+        /* Sidebar Updated for better Mobile view */
         .sidebar {
-            position: fixed; top: 0; left: -350px; width: 320px; height: 100vh;
+            position: fixed; top: 0; left: -350px; width: 300px; height: 100%;
             background: #fff; z-index: 9999; transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            display: flex; flex-direction: column; padding: 30px 20px; box-shadow: 5px 0 25px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column; padding: 20px; box-shadow: 5px 0 25px rgba(0,0,0,0.1);
+            box-sizing: border-box;
         }
         .sidebar.active { left: 0; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 9000; }
         .overlay.show { display: block; }
-        .side-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .side-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .close-btn { background: none; border: none; font-size: 30px; cursor: pointer; }
 
-        .side-section { margin-bottom: 30px; }
-        .section-label { font-size: 10px; color: #999; letter-spacing: 1.5px; font-weight: bold; display: block; margin-bottom: 15px; }
+        .side-section { margin-bottom: 20px; }
+        .section-label { font-size: 10px; color: #999; letter-spacing: 1.5px; font-weight: bold; display: block; margin-bottom: 10px; }
         
-        /* Category List */
-        .category-list { display: flex; flex-direction: column; gap: 8px; }
+        .category-list { display: flex; flex-direction: column; gap: 5px; }
         .cat-btn {
-            padding: 12px 20px; border: 1px solid #eee; background: #fff; border-radius: 10px;
-            cursor: pointer; text-align: left; transition: 0.3s; font-family: 'Cairo'; font-size: 14px;
+            padding: 10px 15px; border: 1px solid #eee; background: #fff; border-radius: 8px;
+            cursor: pointer; text-align: left; transition: 0.3s; font-family: 'Cairo'; font-size: 13px;
         }
         .cat-btn.active, .cat-btn:hover { background: #000; color: #fff; border-color: #000; }
 
-        .cart-preview-box { background: #f9f9f9; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .cart-badge { background: #000; color: #fff; padding: 2px 8px; border-radius: 20px; font-size: 12px; }
+        .cart-preview-box { background: #f9f9f9; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .cart-badge { background: #000; color: #fff; padding: 2px 8px; border-radius: 20px; font-size: 11px; }
 
-        /* Settings Grid (The part you wanted) */
-        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-bottom: 20px; }
         .set-item {
-            background: #f9f9f9; border: 1px solid #eee; padding: 15px 10px;
-            border-radius: 10px; cursor: pointer; display: flex; flex-direction: column;
-            align-items: center; gap: 8px; font-size: 12px; transition: 0.3s;
+            background: #f9f9f9; border: 1px solid #eee; padding: 12px 5px;
+            border-radius: 8px; cursor: pointer; display: flex; flex-direction: column;
+            align-items: center; gap: 5px; font-size: 11px; transition: 0.3s;
         }
-        .set-item i { font-size: 18px; }
 
         /* Products Grid */
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
@@ -68,7 +66,6 @@
         .p-img { width: 100%; height: 400px; object-fit: cover; }
         .p-info { padding: 20px; text-align: center; }
 
-        /* Sale Tags & Prices */
         .sale-badge {
             position: absolute; top: 10px; left: 10px; background: var(--sale);
             color: #fff; padding: 5px 12px; font-size: 11px; font-weight: bold; border-radius: 4px; z-index: 2;
@@ -78,24 +75,44 @@
         .sale-price { color: var(--sale); }
         .normal-price { color: #000; }
 
-        /* Footer */
-        footer { background: #000; color: #fff; padding: 60px 5% 30px; margin-top: 50px; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
+        /* NEW ACCORDION FOOTER */
+        footer { background: #000; color: #fff; padding: 50px 5% 30px; margin-top: 50px; }
+        .footer-top { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; }
+        
+        .footer-about h3 { font-family: 'Syncopate'; font-size: 1rem; margin-bottom: 15px; }
+        .footer-about p { font-size: 13px; line-height: 1.6; color: #ccc; }
+
+        .accordion-container { display: flex; flex-direction: column; gap: 5px; }
+        .acc-item { border-bottom: 1px solid #222; }
+        .acc-btn {
+            width: 100%; background: none; border: none; color: #fff; padding: 15px 0;
+            display: flex; justify-content: space-between; align-items: center;
+            font-family: 'Cairo'; font-size: 13px; font-weight: bold; cursor: pointer; text-transform: uppercase;
+        }
+        .acc-content { 
+            max-height: 0; overflow: hidden; transition: 0.3s ease-out; 
+            font-size: 12px; color: #aaa; line-height: 1.5; padding: 0 5px;
+        }
+        .acc-content p { margin-bottom: 15px; }
+        .acc-content b { color: #fff; }
+
         .social-box { display: flex; gap: 15px; margin-top: 20px; }
-        .social-box a { color: #fff; font-size: 20px; }
-        .copy { text-align: center; margin-top: 40px; font-size: 12px; color: #666; }
+        .social-box a { color: #fff; font-size: 18px; transition: 0.3s; }
+        .copy { text-align: center; margin-top: 50px; font-size: 10px; color: #555; letter-spacing: 1px; }
 
         /* Dark Mode Support */
         body.dark-mode { background: #000; color: #fff; }
         body.dark-mode header, body.dark-mode .sidebar { background: #000; border-color: #222; }
-        body.dark-mode .logo, body.dark-mode .icon-btn, body.dark-mode .close-btn, body.dark-mode .cat-btn, body.dark-mode .brand-name { color: #fff; }
+        body.dark-mode .logo, body.dark-mode .icon-btn, body.dark-mode .close-btn, body.dark-mode .cat-btn, body.dark-mode .brand-name, body.dark-mode .acc-btn { color: #fff; }
         body.dark-mode .cat-btn, body.dark-mode .set-item, body.dark-mode .cart-preview-box { background: #111; border-color: #222; color: #fff; }
         body.dark-mode .p-card { background: #111; border-color: #222; }
         body.dark-mode .normal-price { color: #fff; }
 
         @media (max-width: 768px) {
+            .footer-top { grid-template-columns: 1fr; gap: 30px; }
             .products-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
             .p-img { height: 250px; }
+            .sidebar { width: 280px; }
         }
     </style>
 </head>
@@ -157,11 +174,12 @@
 </div>
 
 <footer>
-    <div class="footer-grid">
+    <div class="footer-top">
         <div class="footer-about">
             <h3>ABOUT ZORIN</h3>
-            <p>ZORIN is a modern clothing brand built on simplicity, quality, and purpose. We believe that style is more than what you wear—it’s how you express confidence, strength, and identity. <br><br> Our designs are inspired by everyday life and driven by a simple message: <b>never lose hope.</b> Every ZORIN piece is carefully crafted to deliver comfort and a clean, timeless look.</p>
-            <b>Don’t Lose Hope.</b>
+            <p>ZORIN is a modern clothing brand built on simplicity, quality, and purpose. We believe that style is more than what you wear—it’s how you express confidence, strength, and identity.<br><br>
+            Every ZORIN piece is carefully crafted to deliver comfort and a clean, timeless look.<br>
+            <b>Don’t Lose Hope.</b></p>
             <div class="social-box">
                 <a href="https://www.instagram.com/zorin_streetwear_brand?igsh=MXhpaDBhbXdpb2pzaA%3D%3D&utm_source=qr" target="_blank"><i class="fab fa-instagram"></i></a>
                 <a href="https://www.tiktok.com/@zorin_streetwear_?_r=1&_t=ZS-92tyxxZrQNo" target="_blank"><i class="fab fa-tiktok"></i></a>
@@ -169,34 +187,68 @@
             </div>
         </div>
 
-        <div class="footer-links">
-            <h4>QUICK LINKS</h4>
-            <ul>
-                <li><a href="javascript:void(0)" onclick="openModal('privacy')">Privacy Policy</a></li>
-                <li><a href="javascript:void(0)" onclick="openModal('contact')">Contact Us</a></li>
-                <li><a href="javascript:void(0)" onclick="openModal('size')">Size Guide</a></li>
-                <li><a href="javascript:void(0)" onclick="openModal('faqs')">FAQs</a></li>
-            </ul>
-        </div>
+        <div class="accordion-container">
+            <div class="acc-item">
+                <button class="acc-btn" onclick="toggleAcc(this)">Privacy Policy <i class="fas fa-plus"></i></button>
+                <div class="acc-content">
+                    <p>At ZORIN, your privacy is important to us. We collect only the information necessary to process your orders and improve your experience.<br><br>
+                    Your personal data is kept secure and will never be shared with third parties, except when required to complete your order or comply with legal obligations.</p>
+                </div>
+            </div>
 
-        <div class="footer-links">
-            <h4>CUSTOMER CARE</h4>
-            <ul>
-                <li><a href="javascript:void(0)" onclick="openModal('shipping')">Shipping & Returns</a></li>
-                <li><a href="javascript:void(0)" onclick="openModal('terms')">Terms & Conditions</a></li>
-            </ul>
+            <div class="acc-item">
+                <button class="acc-btn" onclick="toggleAcc(this)">Contact Us <i class="fas fa-plus"></i></button>
+                <div class="acc-content">
+                    <p>We’d love to hear from you. If you have any questions, feedback, or need support, feel free to reach out to us.<br><br>
+                    <b>📞: 01095901312</b><br>
+                    Business Hours: Saturday – Thursday | 10:00 AM – 6:00 PM<br><br>
+                    We aim to respond to all inquiries within 24 hours.</p>
+                </div>
+            </div>
+
+            <div class="acc-item">
+                <button class="acc-btn" onclick="toggleAcc(this)">Size Guide <i class="fas fa-plus"></i></button>
+                <div class="acc-content">
+                    <p>Choosing the right size is important to us. Please refer to our size guide to find the perfect fit before placing your order.<br><br>
+                    All measurements are in centimeters and may vary slightly due to manufacturing processes. If you’re between sizes or need help, feel free to contact our support team.</p>
+                </div>
+            </div>
+
+            <div class="acc-item">
+                <button class="acc-btn" onclick="toggleAcc(this)">FAQs <i class="fas fa-plus"></i></button>
+                <div class="acc-content">
+                    <p><b>How long does shipping take?</b><br>Orders are usually processed within 1–2 business days. Delivery time depends on your location.<br><br>
+                    <b>Can I change or cancel my order?</b><br>Orders can be modified or canceled within a short time after placing them. Please contact us as soon as possible.<br><br>
+                    <b>Do you offer exchanges?</b><br>Yes, exchanges are available according to our Shipping & Returns policy.</p>
+                </div>
+            </div>
+
+            <div class="acc-item">
+                <button class="acc-btn" onclick="toggleAcc(this)">Shipping & Returns <i class="fas fa-plus"></i></button>
+                <div class="acc-content">
+                    <p>We aim to deliver your order as quickly and safely as possible.<br>
+                    • Orders are processed within 1–2 business days<br>
+                    • Delivery times may vary by location<br><br>
+                    <b>Returns & Exchanges</b><br>
+                    • Returns or exchanges are accepted within 48 hours of delivery<br>
+                    • Items must be unused, unworn, and in original condition<br>
+                    • Proof of purchase is required</p>
+                </div>
+            </div>
+
+            <div class="acc-item">
+                <button class="acc-btn" onclick="toggleAcc(this)">Terms & Conditions <i class="fas fa-plus"></i></button>
+                <div class="acc-content">
+                    <p>By using our website, you agree to comply with our terms and conditions.<br>
+                    • All products are subject to availability<br>
+                    • Prices may change without prior notice<br>
+                    • ZORIN reserves the right to update policies at any time</p>
+                </div>
+            </div>
         </div>
     </div>
     <div class="copy">© 2026 ZORIN STORE. ALL RIGHTS RESERVED.</div>
 </footer>
-
-<div id="infoModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="closeModal()">&times;</span>
-        <div id="modalBody"></div>
-    </div>
-</div>
-
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -217,12 +269,10 @@
     function renderProducts(snap) {
         const display = document.getElementById('productsDisplay');
         display.innerHTML = "";
-        
         snap.forEach(doc => {
             const p = doc.data();
             const pid = doc.id;
             const hasSale = p.salePrice && Number(p.salePrice) < Number(p.price);
-
             display.innerHTML += `
                 <div class="p-card" onclick="location.href='product.html?id=${pid}'">
                     ${hasSale ? '<span class="sale-badge">SALE</span>' : ''}
@@ -241,12 +291,8 @@
     window.filterCat = (cat, btn) => {
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         if(btn) btn.classList.add('active');
-
         let q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-        if (cat !== 'all') {
-            q = query(collection(db, "products"), where("categories", "array-contains", cat));
-        }
-
+        if (cat !== 'all') q = query(collection(db, "products"), where("categories", "array-contains", cat));
         onSnapshot(q, (snap) => renderProducts(snap));
         if(document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
     };
@@ -259,6 +305,21 @@
     window.toggleDarkMode = () => {
         document.body.classList.toggle('dark-mode');
         localStorage.setItem('zorin_theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+    };
+
+    // New Footer Toggle Function
+    window.toggleAcc = (btn) => {
+        const content = btn.nextElementSibling;
+        const icon = btn.querySelector('i');
+        if (content.style.maxHeight) {
+            content.style.maxHeight = null;
+            icon.classList.replace('fa-minus', 'fa-plus');
+        } else {
+            document.querySelectorAll('.acc-content').forEach(c => c.style.maxHeight = null);
+            document.querySelectorAll('.acc-btn i').forEach(i => i.classList.replace('fa-minus', 'fa-plus'));
+            content.style.maxHeight = content.scrollHeight + "px";
+            icon.classList.replace('fa-plus', 'fa-minus');
+        }
     };
 
     window.onload = () => {
