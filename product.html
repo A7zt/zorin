@@ -154,10 +154,16 @@
         <h1 class="logo" onclick="location.href='index.html'">ZORIN</h1>
     </div>
     <div class="nav-icons">
-        <div class="icon-btn" onclick="handleUserIcon()">
-            <span class="user-name-nav" id="navUserName">Login</span>
-            <i class="far fa-user"></i>
-        </div>
+    <div class="icon-btn" onclick="toggleCart(true)" style="position: relative;">
+        <i class="fas fa-shopping-bag"></i>
+        <span id="cartBadge" style="position: absolute; top: -10px; right: -10px; background: red; color: white; font-size: 10px; padding: 2px 6px; border-radius: 50%;">0</span>
+    </div>
+    
+    <div class="icon-btn" onclick="handleUserIcon()">
+        <span class="user-name-nav" id="navUserName">Login</span>
+        <i class="far fa-user"></i>
+    </div>
+</div>
     </div>
 </header>
 
