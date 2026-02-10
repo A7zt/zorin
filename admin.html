@@ -78,6 +78,9 @@
     <div class="nav-link active" onclick="tab('add', this)"><i class="fas fa-plus-circle"></i> إضافة منتج</div>
     <div class="nav-link" onclick="tab('inv', this)"><i class="fas fa-layer-group"></i> المخزن</div>
     <div class="nav-link" onclick="tab('ord', this)"><i class="fas fa-truck"></i> الطلبات</div>
+    <div class="nav-link" onclick="tab('reviewsAdmin', this)">
+    <i class="fas fa-comments"></i> التقييمات
+</div>
     <div class="nav-link" onclick="logout()" style="margin-top: auto; color: #ff4444;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</div>
 </aside>
 
@@ -108,7 +111,7 @@
             </div>
 
             <div id="variantList"></div>
-            <textarea id="pDesc" rows="3" placeholder="وصف المنتج، الخامة..." style="margin-top:15px;"></textarea>
+            <textarea id="productDescription" rows="3" placeholder="وصف المنتج، الخامة..." style="margin-top:15px;"></textarea>
             
             <label style="font-size: 13px; font-weight: bold; margin-bottom: 10px; display: block;">صور المنتج (حتى 6 صور):</label>
             <div class="photo-grid">
@@ -129,6 +132,13 @@
         <h3>الطلبات الواردة</h3>
         <div id="ordContainer"></div>
     </section>
+    <section id="reviewsAdmin" class="section">
+    <div class="header-flex">
+        <h2>إدارة تقييمات العملاء ⭐</h2>
+    </div>
+    <div id="adminReviewsList" class="admin-grid">
+        </div>
+</section>
 </main>
 
 <script>
@@ -146,28 +156,43 @@
 </script>
 
 <script type="module">
+    // 1. استيراد المكتبات المطلوبة من النسخة الجديدة
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, query, orderBy, where, getDocs, doc, addDoc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+    // 2. بيانات مشروع ZORIN STORE 2026 الجديد
     const firebaseConfig = {
-        apiKey: "AIzaSyCInkKv1hByxRZiHbOAfRn9bGbmaAPoZ8A",
-        authDomain: "mystore-842cf.firebaseapp.com",
-        projectId: "mystore-842cf",
-        storageBucket: "mystore-842cf.appspot.com",
-        messagingSenderId: "594163229640",
-        appId: "1:594163229640:web:888670dd4016e8111656fd"
+        apiKey: "AIzaSyAxeYGtXRJLoKguWleXn89BAEMt7wLYAVY",
+        authDomain: "zorin-store-2026.firebaseapp.com",
+        projectId: "zorin-store-2026",
+        storageBucket: "zorin-store-2026.firebasestorage.app",
+        messagingSenderId: "272032162345",
+        appId: "1:272032162345:web:b09eab937b053373ad7238"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-    const ADMIN_EMAIL = "zorin@gmail.com";
+    const ADMIN_EMAIL = "zorinstore2026@gmail.com";
 
-    onAuthStateChanged(auth, (user) => {
-        if (!user) { window.location.href = 'login.html'; }
-        else if (user.email !== ADMIN_EMAIL) { window.location.href = 'index.html'; }
-    });
+ // في ملف admin.html - سطر 149 تقريباً
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // لو المستخدم موجود، نتحقق من الإيميل
+        if (user.email === ADMIN_EMAIL) {
+            console.log("Welcome Admin");
+            // هنا بنسيبه في الصفحة عادي
+            document.body.style.opacity = "1"; // إظهار الصفحة بعد التأكد
+        } else {
+            // لو مسجل بإيميل زبون عادي
+            window.location.href = 'index.html';
+        }
+    } else {
+        // في حالة مفيش مستخدم خالص (بعد ما الفايربيز خلص تحميل)
+        window.location.href = 'login.html';
+    }
+});
 
     window.logout = () => { signOut(auth).then(() => window.location.href = 'login.html'); };
 
@@ -196,29 +221,51 @@
             </div>`).join('');
     }
 
-    window.save = async () => {
-        const btn = document.getElementById('saveBtn');
-        const pName = document.getElementById('pName').value;
-        const pPrice = document.getElementById('pPrice').value;
-        if(!pName || !pPrice || variants.length === 0) return alert("أكمل بيانات المنتج");
-        btn.innerText = "جاري الرفع..."; btn.disabled = true;
+  window.save = async () => {
+    const btn = document.getElementById('saveBtn');
+    const pName = document.getElementById('pName').value;
+    const pPrice = document.getElementById('pPrice').value;
+    const pDescription = document.getElementById('productDescription').value; // جلب الوصف
+
+    if(!pName || !pPrice || variants.length === 0) return alert("أكمل بيانات المنتج");
+    
+    btn.innerText = "جاري الرفع..."; btn.disabled = true;
+    
+    try {
         const urls = [];
         for(let i=1; i<=6; i++){
             const f = document.getElementById('f'+i).files[0];
             if(f){
-                const fd = new FormData(); fd.append('file', f); fd.append('upload_preset', 'ftnc2dkd');
-                const r = await fetch(`https://api.cloudinary.com/v1_1/dv9zvesyp/image/upload`, {method:'POST', body:fd});
+                const fd = new FormData(); fd.append('file', f); fd.append('upload_preset', 'dmx8trp7g');
+                const r = await fetch(`https://api.cloudinary.com/v1_1/dmx8trp7g/image/upload`, {method:'POST', body:fd});
                 const d = await r.json(); urls.push(d.secure_url);
             }
         }
+
         const selectedCategories = [];
         document.querySelectorAll('input[name="categories"]:checked').forEach(cb => selectedCategories.push(cb.value));
+
+        // الرفع لمرة واحدة فقط وببيانات كاملة
         await addDoc(collection(db, "products"), {
-            name: pName, price: Number(pPrice), salePrice: Number(pPrice),
-            categories: selectedCategories, variants: variants, image: urls[0], allImages: urls, createdAt: new Date()
+            name: pName, 
+            price: Number(pPrice), 
+            salePrice: Number(pPrice),
+            pDesc: pDescription, // الحقل ده هو اللي هنربطه
+            categories: selectedCategories, 
+            variants: variants, 
+            image: urls[0], 
+            allImages: urls, 
+            createdAt: new Date()
         });
-        alert("تم النشر بنجاح!"); location.reload();
-    };
+
+        alert("تم النشر بنجاح!"); 
+        location.reload();
+    } catch (err) {
+        console.error(err);
+        alert("حدث خطأ أثناء الرفع");
+        btn.innerText = "نشر المنتج الآن"; btn.disabled = false;
+    }
+};
 
     onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
         const inv = document.getElementById('invContainer');
@@ -302,6 +349,60 @@
     });
 
     window.delOrder = async (id) => { if(confirm("حذف الطلب نهائياً؟")) await deleteDoc(doc(db, "orders", id)); };
+// دالة عرض التقييمات للأدمن (تحديث لحظي)
+function loadReviewsForAdmin() {
+    const container = document.getElementById('adminReviewsList');
+    if (!container) return;
+
+    // بنستخدم db اللي اتعرفت فوق في سطر 143
+    const q = query(collection(db, "reviews"), orderBy("createdAt", "desc")); 
+    
+    onSnapshot(q, (snap) => {
+        container.innerHTML = "";
+        if (snap.empty) {
+            container.innerHTML = "<p style='text-align:center; color:#888;'>لا توجد تقييمات حالياً</p>";
+            return;
+        }
+        snap.forEach(d => {
+            const r = d.data();
+            container.innerHTML += `
+                <div class="glass-card" style="padding:15px; margin-bottom:15px; border-right: 5px solid #ff4757; position:relative;">
+                    <div style="display:flex; justify-content:space-between; align-items:start;">
+                        <div>
+                            <b style="font-size:16px;">${r.userName}</b>
+                            <div style="color:#ffc107; margin:5px 0;">${'★'.repeat(r.rating)}</div>
+                        </div>
+                        <button onclick="deleteReview('${d.id}')" style="background:#ff4757; color:#fff; border:none; padding:8px 12px; border-radius:5px; cursor:pointer;">
+                            <i class="fas fa-trash"></i> حذف
+                        </button>
+                    </div>
+                    <p style="color:#555; margin:10px 0; font-size:14px;">"${r.comment}"</p>
+                    <small style="color:#bbb; font-size:11px;">المنتج ID: ${r.productId}</small>
+                </div>
+            `;
+        });
+    }, (error) => {
+        console.error("Error fetching reviews: ", error);
+        if(error.message.includes("index")) {
+            container.innerHTML = "<p style='color:red;'>محتاج تفعيل الـ Index من الرابط في الـ Console</p>";
+        }
+    });
+}
+
+// دالة الحذف (ربطها بـ window عشان الـ onclick يشوفها)
+window.deleteReview = async (id) => {
+    if (confirm("هل أنت متأكد من حذف هذا التقييم؟")) {
+        try {
+            await deleteDoc(doc(db, "reviews", id));
+            alert("تم الحذف ✅");
+        } catch (e) {
+            alert("فشل الحذف: تأكد من صلاحيات الأدمن");
+        }
+    }
+};
+
+// تشغيل الدالة داخل الموديول
+loadReviewsForAdmin();
 </script>
 </body>
 </html>
